@@ -1,13 +1,25 @@
+# Compute storage requirements
+SYSTEM_STORAGE=$(df $SYSTEM_MNT | tail -1 | tr -s ' ' | cut -d ' ' -f4)
+STORAGE_BUFFER=10240
+
+compute_ih8sn_space
+if [ "$SYSTEM_STORAGE" -lt "$NEEDED_STORAGE_SYSTEM" ]; then
+    compute_ih8sn_space
+    if [ "$SYSTEM_STORAGE" -lt "$NEEDED_STORAGE_SYSTEM" ]; then
+        error_no_space
+    fi
+fi
+
 # Set ih8sn config
 MODEL=$(getprop ro.product.model | tr ' ' '_' | sed 's/_*$//')
 SERIALNO=$(getprop ro.boot.serialno | tr ' ' '_' | sed 's/_*$//')
 PRODUCT=$(getprop ro.build.product | tr ' ' '_' | sed 's/_*$//')
-DEFAULT_CONFIG=system/etc/ih8sn.conf
-if [[ $(unzip -l "$ZIP" | grep ih8sn.conf."$MODEL"$) ]] && [[ ! -z "$MODEL" ]]; then
+DEFAULT_CONFIG=system/etc/props.conf
+if [[ $(unzip -l "$ZIP" | grep props.conf."$MODEL"$) ]] && [[ ! -z "$MODEL" ]]; then
     CONFIG=$DEFAULT_CONFIG.$MODEL
-elif [[ $(unzip -l "$ZIP" | grep ih8sn.conf."$SERIALNO"$) ]] && [[ ! -z "$SERIALNO" ]]; then
+elif [[ $(unzip -l "$ZIP" | grep props.conf."$SERIALNO"$) ]] && [[ ! -z "$SERIALNO" ]]; then
     CONFIG=$DEFAULT_CONFIG.$SERIALNO
-elif [[ $(unzip -l "$ZIP" | grep ih8sn.conf."$PRODUCT"$) ]] && [[ ! -z "$PRODUCT" ]]; then
+elif [[ $(unzip -l "$ZIP" | grep props.conf."$PRODUCT"$) ]] && [[ ! -z "$PRODUCT" ]]; then
     CONFIG=$DEFAULT_CONFIG.$PRODUCT
 else
     CONFIG=$DEFAULT_CONFIG
@@ -23,10 +35,10 @@ else
 fi
 
 ui_print "Copying files"
-unzip -qq "$ZIP" system/etc/init/ih8sn.rc system/addon.d/60-ih8sn.sh system/bin/ih8sn -d "${SYSTEM_MNT}/"
+unzip -qq "$ZIP" system/etc/init/props.rc system/addon.d/60-props.sh system/bin/props -d "${SYSTEM_MNT}/"
 
 ui_print "Using ih8sn config: $CONFIG"
-unzip -qqp "$ZIP" "$CONFIG" >"${SYSTEM_MNT}/$DEFAULT_CONFIG"
+unzip -qqp "$ZIP" "$CONFIG" >"${SYSTEM_MNT}/system/etc/props.conf"
 
 if [[ $(unzip -l "$ZIP" | grep $LIBDIR/"$SDKVERSION"/$LIBKEYSTORE$) ]]; then
     if $(grep -q '^FORCE_BASIC_ATTESTATION=1' "${SYSTEM_MNT}/$CONFIG") || ! $(grep -q '^FORCE_BASIC_ATTESTATION=0' "${SYSTEM_MNT}/$CONFIG"); then

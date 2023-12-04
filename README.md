@@ -17,7 +17,7 @@
 ### 1: Clone ih8sn repo.
 
 ```
-git clone https://github.com/sdm870/ih8sn ih8sn
+git clone https://github.com/althafvly/ih8sn ih8sn
 ```
 
 ### 2: Include makefile.
@@ -46,14 +46,14 @@ Check the "Releases" section on the right. Make sure to download correct zip for
 - aarch64 = arm64
 - armv7a = arm
 
-## 2: Check if your device is supported in system/etc/ih8sn.conf.<codename/model> else create new.
+## 2: Check if your device is supported in system/etc/props.conf.<codename/model> else create new.
 
 - If your device isn't available in the list then follow below steps to create ih8sn config for your device.
 - If your model has spaces, then it must be replaced with underscore.
 
-### Configure ih8sn.conf for your device.
+### Configure props.conf for your device.
 
-- Modify ih8sn.conf for your device and save it as ih8sn.conf.`<codename>` in etc.
+- Modify props.conf for your device and save it as props.conf.`<codename>` in etc.
   Example:
 
 ```
@@ -143,7 +143,3 @@ adb sideload ih8sn-uninstaller.zip
 ```
 
 ## 4: Reboot your device.
-
-## Notes:
-
-- Spoofing stays in ota updates (except libkeystore-attestation-application-id.so) if the rom supports it.

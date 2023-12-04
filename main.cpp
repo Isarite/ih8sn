@@ -46,7 +46,7 @@ void property_override(const std::vector<std::string> &props,
 // Returns: A std::string containing the configuration file name
 std::string get_config_filename() {
   // Default configuration file name
-  std::string filename = "/system/etc/ih8sn.conf";
+  std::string filename = "/system/etc/props.conf";
   // Array of system property names to check
   const char *prop_names[] = {"ro.build.product", "ro.build.model",
                               "ro.boot.serialno"};
@@ -210,6 +210,7 @@ int main(int argc, char *argv[]) {
   const auto config = load_config();
   const auto build_description = config.find("BUILD_DESCRIPTION");
   const auto build_fingerprint = config.find("BUILD_FINGERPRINT");
+  const auto build_id = config.find("BUILD_ID");
   const auto build_security_patch_date =
       config.find("BUILD_SECURITY_PATCH_DATE");
   const auto build_tags = config.find("BUILD_TAGS");
@@ -232,6 +233,11 @@ int main(int argc, char *argv[]) {
     if (build_fingerprint != config.end()) {
       property_override(property_list("ro.", "build.fingerprint"),
                         build_fingerprint->second.c_str());
+    }
+
+    if (build_id != config.end()) {
+      property_override(property_list("ro.", "build.id"),
+                        build_id->second.c_str());
     }
 
     if (build_tags != config.end()) {
